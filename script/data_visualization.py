@@ -32,15 +32,23 @@ def hist_rev_ratings(saveFig=False, figName='imgs/rev_rating_dist.png'):
     import numpy as np
     # Load the data
     data = get_processed_reviews()
+    def millions(x, pos):
+        """The two args are the value and tick position."""
+        return '{:1.1f}M'.format(x*1e-6)
     # Create the plot
-    plt.hist(data['rating'], rwidth=.8, bins=np.arange(1, 5+2) - 0.5)
-    plt.xticks([1, 2, 3, 4, 5])
+    fig, ax = plt.subplots()
+    ax.yaxis.set_major_formatter(millions)
+    ax.hist(data['rating'], rwidth=.8, bins=np.arange(1, 5+2) - 0.5)
+    ax.set_xticks(np.arange(1, 5+1))
+    ax.set_title('Distribuzione delle Recensioni')
+    ax.set_xlabel('Valutazione')
+    ax.set_ylabel('Numero di Recensioni')
     if saveFig:
         plt.savefig(figName)
     plt.show()
 
 def main():
-    hist_rev_ratings()
+    hist_rev_ratings(True)
 
 if __name__ == "__main__":
     main()
