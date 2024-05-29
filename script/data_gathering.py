@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def get_raw_reviews(
     columns: list = [],
     split: str = "full",
@@ -10,13 +11,13 @@ def get_raw_reviews(
     Fetches and returns a dataset from the Amazon Reviews 2023 dataset.
 
     Args:
-        `columns` (list, optional): List of column names to include in the dataset. 
+        `columns` (list, optional): List of column names to include in the dataset.
             Defaults to [].
-        `split` (str, optional): Split of the dataset to use. 
+        `split` (str, optional): Split of the dataset to use.
             Defaults to "full".
-        `cache_dir` (str, optional): Directory to cache the dataset. 
+        `cache_dir` (str, optional): Directory to cache the dataset.
             Defaults to "data/_raw/".
-        `toDF` (bool, optional): Flag indicating whether to return the dataset as a pandas DataFrame. 
+        `toDF` (bool, optional): Flag indicating whether to return the dataset as a pandas DataFrame.
             Defaults to True.
 
     Returns:
@@ -24,6 +25,7 @@ def get_raw_reviews(
     """
     import os
     from datasets import load_dataset
+
     os.makedirs(cache_dir) if not os.path.exists(cache_dir) else None
     dataset = load_dataset(
         "McAuley-Lab/Amazon-Reviews-2023",
@@ -44,12 +46,16 @@ def get_processed_reviews() -> pd.DataFrame:
         pd.DataFrame: The preprocessed dataset.
     """
     import os
+
     if not os.path.exists("data/_processed/reviews.csv"):
-        raise FileNotFoundError("The preprocessed dataset does not exist. Please run the preprocessing script (prep_reviews).")
+        raise FileNotFoundError(
+            "The preprocessed dataset does not exist. Please run the preprocessing script (prep_reviews)."
+        )
     return pd.read_csv("data/_processed/reviews.csv")
 
 def main():
     get_raw_reviews()
+
 
 if __name__ == "__main__":
     main()
