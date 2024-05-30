@@ -19,6 +19,7 @@ def plot_rev_timedist(saveFig=False, figName="imgs/rev_time_dist.png"):
     plt.xlabel("Data")
     plt.ylabel("Numero di Recensioni")
     plt.grid(True)
+    plt.tight_layout()
     if saveFig:
         plt.savefig(figName)
     plt.show()
