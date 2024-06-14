@@ -67,5 +67,5 @@ def basic_project(rating_matrix):
 
 if __name__ == '__main__':
     import pandas as pd
-    reviews_df = pd.read_csv('data/final/reviews.csv') # TODO: change the path
+    reviews_df = pd.read_csv('data/final/reviews.csv')
     basic_project(reviews_df)
