@@ -6,15 +6,8 @@ from sklearn.neighbors import KNeighborsRegressor
 
 COLLECTION_NAME = "amazon_products_tfidf"
 
-# read from csv file if exists
-if os.path.exists('data/_tfidf/tfidf_data.csv'):
-    reviews_df = pd.read_csv('data/final/reviews.csv')
-    tfidf_data = pd.read_csv('data/_tfidf/tfidf_data.csv')
-    ids = tfidf_data['parent_asin']
-
-client = QdrantClient(host="localhost", port=6333)
-
-def create_collection(vector_size, collection_name=COLLECTION_NAME):
+def create_collection(vector_size, dataframe, ids, collection_name=COLLECTION_NAME): #TODO: DF WITHOUT PARENT_ASIN
+    client = QdrantClient(host='localhost', port=6333)
     # if client.collection_exists(collection_name):
     #     client.delete_collection(collection_name)
     if not client.collection_exists(collection_name):
@@ -23,10 +16,10 @@ def create_collection(vector_size, collection_name=COLLECTION_NAME):
             collection_name=collection_name,
             vectors_config=models.VectorParams(size=vector_size, distance=models.Distance.COSINE)
         )
-        tfidf_data_copy = tfidf_data.copy().drop(columns=['parent_asin'])
-        insert_embeddings(tfidf_data_copy.to_numpy(), ids)
+        insert_embeddings(dataframe.to_numpy(), ids, collection_name)
     
 def insert_embeddings(embeddings, product_ids, collection_name=COLLECTION_NAME):
+    client = QdrantClient(host='localhost', port=6333)
     ids = [i for i in range(len(embeddings))]
     print(f"Inserting {len(embeddings)} embeddings...")
     for i in range(0, len(embeddings), 200):
@@ -49,6 +42,7 @@ def insert_embeddings(embeddings, product_ids, collection_name=COLLECTION_NAME):
     return operation_status.status == models.UpdateStatus.COMPLETED
 
 def search_similar_products(query_embedding, top_k=5, ids=[], collection_name=COLLECTION_NAME):
+    client = QdrantClient(host='localhost', port=6333)
     if ids != []:
         response = client.search(
             collection_name=collection_name,
@@ -71,7 +65,14 @@ def search_similar_products(query_embedding, top_k=5, ids=[], collection_name=CO
         )
     return response
 
-if __name__ == '__main__':
+if __name__ == '__main__': #TODO: FIX FUNCTIONS IN MAIN AND TRANSFER IN ANOTHER FILE
+    # read from csv file if exists
+    if os.path.exists('data/_tfidf/tfidf_data.csv'):
+        reviews_df = pd.read_csv('data/final/reviews.csv')
+        tfidf_data = pd.read_csv('data/_tfidf/tfidf_data.csv')
+        ids = tfidf_data['parent_asin']
+
+    client = QdrantClient(host="localhost", port=6333)
     if 'tfidf_data' in locals():
         create_collection(len(tfidf_data.columns)-1)
         

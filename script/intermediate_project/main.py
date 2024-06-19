@@ -30,48 +30,47 @@ def intermediate_project(reviews_df, items_df):
 
     # -------------------------- 3. Word2Vec representation of the items -------------------------------------------------
 
-    print()
+    from sentence_transformers import SentenceTransformer
 
+    model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     data = []
 
     for sent in processed_items_df['title_description'].to_list():
-        data.append([])
-        # tokenize the sentence into words
-        for word in word_tokenize(sent):
-            data[-1].append(word.lower())
-            
-    skipgram = gensim.models.Word2Vec(data, min_count=1, vector_size=20, window=5, sg=1)
+        data.append(sent)
+    
+    embeddings = model.encode(data)
+
+    #create a dataframe with the embeddings and parent_asin
+    embeddings_df = pd.DataFrame(embeddings)
+    embeddings_df['parent_asin'] = processed_items_df['parent_asin']
+
+    #write the embeddings to a csv file
+    os.makedirs('data/_transformers', exist_ok=True)
+    embeddings_df.to_csv('data/_transformers/transformers_embeddings.csv', index=False)
+
+
+    # print()
+
+
+
+    # skipgram = gensim.models.Word2Vec(data, min_count=1, vector_size=20, window=5, sg=1)
 
     
 
-    ## -------------------------- 4. Perform dimensionality reduction  -----------------------------------------------------  
-    #             
-    from sklearn.manifold import TSNE
-    import numpy as np
+    # ## -------------------------- 4. Perform dimensionality reduction  -----------------------------------------------------  
+    # #             
+    # from sklearn.manifold import TSNE
+    # import numpy as np
 
-    tokens = []
-    labels = []
-    print(skipgram.wv.index_to_key)
-    for word in skipgram.wv.index_to_key:
-        tokens.append(skipgram.wv[word])
-        labels.append(word)
+    # tokens = []
+    # labels = []
+    # print(skipgram.wv.index_to_key)
+    # for word in skipgram.wv.index_to_key:
+    #     tokens.append(skipgram.wv[word])
+    #     labels.append(word)
 
-    tsne_model = TSNE(n_components=2)
-    tsne_embeddings = tsne_model.fit_transform(np.array(tokens))
-
-
-    import matplotlib.pyplot as plt
-
-    for point, label in zip(tsne_embeddings, labels):
-        plt.scatter(point[0], point[1])
-        plt.annotate(label,
-                    xy=point,
-                    xytext=(5, 2),
-                    textcoords="offset points",
-                    ha="right",
-                    va="bottom")
-        
-    plt.show()
+    # tsne_model = TSNE(n_components=3)
+    # tsne_embeddings = tsne_model.fit_transform(np.array(tokens))
 
 
 
