@@ -9,25 +9,25 @@ def sort_columns(row):
     sorted_columns = sorted(row.items(), key=lambda x: x[1], reverse=True)
     return [col[0] for col in sorted_columns[:5]]
 
-def basic_project(rating_matrix):
+def basic_project(rating_matrix,FORCE):
     # pandas to surprise dataset
     reader = Reader(rating_scale=(1, 5))
     dataset = Dataset.load_from_df(rating_matrix[['user_id', 'parent_asin', 'rating']], reader)
 
     # -------------------------- 2. Find the best configuration for KNN ------------------------------------------
 
-    KNN_mse, KNN_rmse, best_KNN_config = find_best_KNN_config(dataset)
+    KNN_mse, KNN_rmse, best_KNN_config = find_best_KNN_config(dataset,FORCE)
 
     # -------------------------- 3. Fill the rating matrix with KNN -----------------------------------------------
 
     users_id = rating_matrix["user_id"].unique()
     items_id = rating_matrix["parent_asin"].unique()
 
-    filled_rating_matrix = fill_rating_matrix_KNN(dataset, users_id, items_id, best_KNN_config)
+    filled_rating_matrix = fill_rating_matrix_KNN(dataset, users_id, items_id, best_KNN_config, FORCE)
 
     # -------------------------- 4. Perform user segmentation based on preferences --------------------------------
     
-    KMEANS_inertia, best_n_clusters = find_best_KMEANS_config(filled_rating_matrix)
+    KMEANS_inertia, best_n_clusters = find_best_KMEANS_config(filled_rating_matrix, FORCE)
 
     # -------------------------- 5. Create the recommendation list for each user -----------------------------------
 
@@ -43,9 +43,9 @@ def basic_project(rating_matrix):
 
     # -------------------------- 6. Compare KNN and SVD ---------------------------------------------------------------
 
-    SVD_mse, SVD_rmse, best_SVD_config = find_best_SVD_config(dataset)
+    SVD_mse, SVD_rmse, best_SVD_config = find_best_SVD_config(dataset, FORCE)
 
-    filled_rating_matrix_SVD = fill_rating_matrix_SVD(dataset, users_id, items_id, best_SVD_config)
+    filled_rating_matrix_SVD = fill_rating_matrix_SVD(dataset, users_id, items_id, best_SVD_config, FORCE)
 
     # -------------------------- not required
     res_df = pd.DataFrame(filled_rating_matrix_SVD)
@@ -68,4 +68,5 @@ def basic_project(rating_matrix):
 if __name__ == '__main__':
     import pandas as pd
     reviews_df = pd.read_csv('data/final/reviews.csv')
-    basic_project(reviews_df)
+    FORCE = False
+    basic_project(reviews_df, FORCE)

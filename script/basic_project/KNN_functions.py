@@ -40,7 +40,7 @@ def find_best_KNN_config(dataset, force=False) -> dict:
     except FileNotFoundError:
         print('Searching best KNN configuration...')
         param_grid = {
-            'k': list(range(10, 45, 5)), # TODO: check 40 too high
+            'k': list(range(11, 33, 2)), # TODO: check 40 too high
             'sim_options': {
                 'name': ['cosine', 'msd', 'pearson'],
                 'user_based': [True, False],
@@ -50,7 +50,7 @@ def find_best_KNN_config(dataset, force=False) -> dict:
         # Initialize and train the Grid Search
         gs = model_selection.GridSearchCV(KNNBasic, param_grid,
                                         measures=["rmse", "mse"],
-                                        cv=5,
+                                        cv=10,
                                         n_jobs=-1)
         gs.fit(dataset)
 
