@@ -1,23 +1,13 @@
-
-
 from pandas import DataFrame
 
-
-def intermediate_pre_process(processed_items_df: DataFrame, processed_reviews_df: DataFrame):
+def intermediate_pre_process(processed_items_df: DataFrame):
     from nltk.tokenize import word_tokenize
     from nltk.corpus import stopwords
     from nltk.stem import WordNetLemmatizer
     import nltk, contractions, re, os
     from unidecode import unidecode
 
-
-    # drop from processed_items_df all raws with 'title' column as nan
-    processed_items_df = processed_items_df.dropna(subset=['title'])
-    #remove rows with "description" column as '[]'
-    processed_items_df = processed_items_df[processed_items_df['description'] != '[]']
-    # drop from processed_reviews_df all raws with 'parent_asin' not in processed_items_df
-    processed_reviews_df = processed_reviews_df[processed_reviews_df['parent_asin'].isin(processed_items_df['parent_asin'])]
-
+    # -------------------------- 1. Preprocess text attributes of the items ------------------------------------------
     # convert all the text to lowercase
     processed_items_df['title'] = processed_items_df['title'].apply(lambda x: x.lower())
     processed_items_df['description'] = processed_items_df['description'].apply(lambda x: x.lower())
@@ -78,4 +68,4 @@ def intermediate_pre_process(processed_items_df: DataFrame, processed_reviews_df
     # save on csv create folder
     os.makedirs('data/_lemmataized', exist_ok=True)
     processed_items_df.to_csv('data/_lemmataized/lemmataized_items.csv', index=False)
-    return processed_items_df, processed_reviews_df
+    return processed_items_df

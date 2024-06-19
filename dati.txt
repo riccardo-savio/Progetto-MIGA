@@ -2,5 +2,5 @@ numero di utenti (solo filtro 2012): 2603917
 numero prodotti (solo filtro 2012): 131805
 
 
-numero utenti con minimo 18 rew : 5671
-numero prodotti con minimo 10 rew e filtro prima : 4434
+numero utenti con minimo 18 rew : 5859 
+numero prodotti con minimo 8 rew e filtro prima : 4080

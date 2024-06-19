@@ -55,18 +55,19 @@ def prep_metadata(columns: list = []) -> pd.DataFrame | None:
 
     from data_gathering import get_raw_metadata
     from data_gathering import get_processed_reviews
-
     if not os.path.exists("data/_processed/metadata.csv") or len(columns) > 0:
         os.makedirs("data/_processed/") if not os.path.exists(
             "data/_processed/"
         ) else None
         df = get_raw_metadata(columns=columns, toDF=True)
-        # Drop duplicates
-        df_r = get_processed_reviews()
-        df = df[df["parent_asin"].isin(df_r["parent_asin"])]
+        df = df.dropna(subset=['title'])
+        df = df.dropna(subset=['description'])
+        df['description'] = df['description'].astype(str)
+        df = df[df['description'] != '[]']
         df.to_csv("data/_processed/metadata.csv", index=False)
         return df
-    return None
+    else:
+        return None
 
 def filter_by_date(df: pd.DataFrame, start_date: str, end_date: str) -> pd.DataFrame:
     """
@@ -76,7 +77,6 @@ def filter_by_date(df: pd.DataFrame, start_date: str, end_date: str) -> pd.DataF
         df (pd.DataFrame): The dataset to filter.
         start_date (str): The start date of the range (inclusive).
         end_date (str): The end date of the range (inclusive).
-
     Returns:
         pd.DataFrame: The filtered dataset.
     """
@@ -97,9 +97,7 @@ def filter_by_user_nreviews(df: pd.DataFrame, n: int) -> pd.DataFrame:
     """
     df_grouped = df[["user_id", "rating"]].groupby("user_id").count().reset_index()
     df_grouped.columns = ["user_id", "count"]
-    df_filtered = df[
-        df["user_id"].isin(df_grouped[df_grouped["count"] >= n]["user_id"])
-    ]
+    df_filtered = df[ df["user_id"].isin(df_grouped[df_grouped["count"] >= n]["user_id"]) ]
     return df_filtered
 
 def filter_by_prod_nreviews(df: pd.DataFrame, n: int) -> pd.DataFrame:
@@ -113,13 +111,9 @@ def filter_by_prod_nreviews(df: pd.DataFrame, n: int) -> pd.DataFrame:
     Returns:
         pd.DataFrame: The filtered dataset.
     """
-    df_grouped = (
-        df[["parent_asin", "rating"]].groupby("parent_asin").count().reset_index()
-    )
+    df_grouped = df[["parent_asin", "rating"]].groupby("parent_asin").count().reset_index()
     df_grouped.columns = ["parent_asin", "count"]
-    df_filtered = df[
-        df["parent_asin"].isin(df_grouped[df_grouped["count"] >= n]["parent_asin"])
-    ]
+    df_filtered = df[df["parent_asin"].isin(df_grouped[df_grouped["count"] >= n]["parent_asin"])]
     return df_filtered
 
 
@@ -128,16 +122,19 @@ def main():
     
     print("Preprocessing reviews dataset...")
     prep_reviews(["rating", "parent_asin", "user_id", "timestamp"])
+
     df_r = get_processed_reviews()
     df_r = filter_by_date(df_r, "2011-01-01", "2024-01-01")
     df_r = filter_by_user_nreviews(df_r, 18)[["user_id", "parent_asin", "rating"]]
-    df_r = filter_by_prod_nreviews(df_r, 10)
-
+    df_r = filter_by_prod_nreviews(df_r, 8)
     print("Preprocessing metadata dataset...")
     prep_metadata(['parent_asin', 'title', 'description'])
     df_m = get_processed_metadata()
-    # drop from df_m all raws with 'parent_asin' not in df_r
     df_m = df_m[df_m["parent_asin"].isin(df_r["parent_asin"])]
+    df_r = df_r[df_r["parent_asin"].isin(df_m["parent_asin"])]
+
+    print(df_r["user_id"].nunique(), df_r["parent_asin"].nunique())
+    print("Dimensione", df_m.shape, df_r.shape)
 
     os.makedirs("data/final/") if not os.path.exists("data/final/") else None
     df_r.to_csv("data/final/reviews.csv", index=False)
