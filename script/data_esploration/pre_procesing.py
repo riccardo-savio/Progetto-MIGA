@@ -136,6 +136,8 @@ def main():
     print("Preprocessing metadata dataset...")
     prep_metadata(['parent_asin', 'title', 'description'])
     df_m = get_processed_metadata()
+    # drop from df_m all raws with 'parent_asin' not in df_r
+    df_m = df_m[df_m["parent_asin"].isin(df_r["parent_asin"])]
 
     os.makedirs("data/final/") if not os.path.exists("data/final/") else None
     df_r.to_csv("data/final/reviews.csv", index=False)
