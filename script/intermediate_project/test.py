@@ -1,6 +1,13 @@
-import re, string
+import hashlib
+import uuid
+import pandas as pd
 
-x = '"[\'Following the record-breaking launch of NBA 2K16, the NBA 2K franchise continues to stake its claim as the most authentic sports video game with NBA 2K17. As the franchise that “all sports video games should aspire to be” (GamesRadar), NBA 2K17 will take the game to new heights and continue to blur the lines between video game and reality.\']"'
-other_characters = '“”'
+def create_uuid_from_string(val: str):
+    import hashlib
+    import uuid
+    hex_string = hashlib.md5(val.encode("UTF-8")).hexdigest()
+    return uuid.UUID(hex=hex_string)
 
-print(re.sub('[%s]' % re.escape(string.punctuation + other_characters), '' , x))
+df = pd.read_csv('data\\_tfidf\\tfidf_data.csv')
+df = df[df['parent_asin'].notna()]
+df.to_csv('data\\_tfidf\\parent_asin.csv', index=False)
