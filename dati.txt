@@ -4,3 +4,94 @@ numero prodotti (solo filtro 2012): 131805
 
 numero utenti con minimo 18 rew : 5859 
 numero prodotti con minimo 8 rew e filtro prima : 4080
+
+
+------------advanced project: data scaling --------------
+before scaling: 
+(92860, 2277)
+
+------------advanced project: models --------------
+1) with class imbalance: 
+precision    recall  f1-score   support
+
+    -1       0.40      0.37      0.38      1627
+    0       0.16      0.12      0.14      1482
+    1       0.88      0.91      0.90     15463
+
+    accuracy                           0.80     18572
+   macro avg       0.48      0.47      0.47     18572
+weighted avg       0.78      0.80      0.79     18572
+
+Model confusion matrix:  
+[[  606   205   816]
+ [  272   183  1027]
+ [  644   725 14094]]
+
+2) without class imbalance:
+sentiment item count:
+
+ 1    8400
+-1    8398
+ 0    7358
+
+ Model score:
+            precision    recall  f1-score   support
+
+          -1       0.57      0.54      0.55      1657
+           0       0.42      0.32      0.36      1484
+           1       0.57      0.72      0.63      1691
+
+    accuracy                           0.53      4832
+   macro avg       0.52      0.52      0.52      4832
+weighted avg       0.52      0.53      0.52      4832
+
+Model confusion matrix:  
+[[ 894  358  405]
+ [ 492  469  523]
+ [ 194  282 1215]]
+
+ lemmatized_transformers and bow shape:  (75807, 4)
+
+
+------------advanced project: models --------------
+1) with class imbalance:
+Model score:
+               precision    recall  f1-score   support
+
+          -1       0.08      0.07      0.07      1362
+           0       0.06      0.05      0.06      1118
+           1       0.83      0.86      0.85     12355
+
+    accuracy                           0.73     14835
+   macro avg       0.33      0.33      0.33     14835
+weighted avg       0.71      0.73      0.72     14835
+
+Model confusion matrix:  
+[[   91    90  1181]
+ [  103    60   955]
+ [  879   852 10624]]
+Model saved successfully!
+
+2) without class imbalance:
+sentiment
+ 1.0    8400
+-1.0    6624
+ 0.0    5846
+Name: count, dtype: int64
+Training the model...
+evaluating the model...
+Model score: 
+               precision    recall  f1-score   support
+
+        -1.0       0.33      0.29      0.31      1389
+         0.0       0.28      0.24      0.26      1117
+         1.0       0.42      0.50      0.45      1668
+
+    accuracy                           0.36      4174
+   macro avg       0.34      0.34      0.34      4174
+weighted avg       0.35      0.36      0.35      4174
+
+Model confusion matrix:  
+[[401 331 657]
+ [332 266 519]
+ [484 348 836]]
