@@ -21,10 +21,10 @@ numero utenti con minimo 13 rew dopo filtro prodotti: 3656
 
 -------------- TF-IDF --------------
 
-Start testing the qdrant model... DA RIFARE
-MSE: 1.0060830680175152
-RMSE: 1.0030369225594415
-Time elapsed (qdrant): 33495.62333440781 seconds
+Start testing the qdrant model...
+MSE: 0.9552525317385009
+RMSE: 0.9773702122218074
+Time elapsed (qdrant): 29247.14759349823 seconds
 
 Start testing the KNN model...
 MSE (KNN): 0.9401470826357956
