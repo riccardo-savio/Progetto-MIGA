@@ -44,6 +44,8 @@ def advanced_pre_process():
     from nltk.stem import WordNetLemmatizer
     import nltk, contractions, re, os
     from unidecode import unidecode
+    from transformers import pipeline
+    import time
 
     reviews_df = pd.read_csv('data/final/reviews_advanced.csv')
 
@@ -86,7 +88,43 @@ def advanced_pre_process():
 
     # remove diacritics
     reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: unidecode(x, errors='preserve'))
+
+
+    #summarize the text
+
+    print('Summarizing text...', time.time())
+
+    summarizer = pipeline("summarization", model="google-t5/t5-small", tokenizer="google-t5/t5-small")
+
+    def summarize_title_text(text):
+        if len(text.split()) < 100:
+            return text
+        return summarizer(text[:511], max_length=100, min_length=5)[0]['summary_text']
+
+    reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: summarize_title_text(x))
+
+    print('Summarized text ended', time.time())
+
+    reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: x.lower())
+
+    # substitute all ’ with '
+    reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: x.replace('’', "'"))
  
+    # remove all ‘
+    reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: x.replace('‘', ''))
+
+    # expand contractions
+    reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: " ".join([contractions.fix(expanded_word) for expanded_word in x.split()]))
+
+    # replace all not letters or space characters with a space
+    reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: re.sub(r'[^a-zA-Z\s]', ' ', x))
+  
+    # remove extra spaces
+    reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: re.sub(' +', ' ', x))
+
+    # remove diacritics
+    reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: unidecode(x, errors='preserve'))
+
     # -------------------------- 1. Preprocess text attributes of the items ------------------------------------------
 
     nltk.download('punkt')
@@ -105,9 +143,24 @@ def advanced_pre_process():
     lemmatizer = WordNetLemmatizer()
     reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
 
-    # unify the words in the 'title_text_description' column in a single string
+    # unify the words in the 'title_text' column in a single string
     reviews_df['title_text'] = reviews_df['title_text'].apply(lambda x: ' '.join(x))
 
+    print(reviews_df.shape)
+    #drop all rows where text_tilte column is longer than 1000 characters
+    reviews_df = reviews_df[reviews_df['title_text'].apply(lambda x: len(x) < 200)]
+
+    #drop all single or double characters in the text_title column
+    def remove_small_words(text):
+        return ' '.join([word for word in text.split() if len(word) > 2])
+    
+    reviews_df['title_text'] = reviews_df['title_text'].apply(remove_small_words)
+
+    print(reviews_df.shape)
+    # drop all rows where text_title column is empty
+    reviews_df = reviews_df.dropna()
+    print(reviews_df.shape)
+    
     # save on csv create folder
     os.makedirs('data/_lemmataized', exist_ok=True)
     reviews_df.to_csv('data/_lemmataized/lemmataized_reviews.csv', index=False)
