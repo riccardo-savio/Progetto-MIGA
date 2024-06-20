@@ -5,9 +5,7 @@ def bow_embeddings(review_df: pd.DataFrame):
     import os
     if(os.path.exists('data/_advanced_project/bow_embeddings.csv')):
         return pd.read_csv('data/_advanced_project/bow_embeddings.csv')
-    
-    from sklearn.decomposition import PCA
-    from sklearn.discriminant_analysis import StandardScaler
+
     from sklearn.feature_extraction.text import CountVectorizer
 
     vectorizer = CountVectorizer()
@@ -40,13 +38,11 @@ def transformers_embeddings(review_df: pd.DataFrame):
 
     model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     data = []
-    #review_df.dropna()
 
     for sent in review_df['title_text'].to_list():
         data.append(sent)
     
     embeddings = model.encode(data)
-    #create a dataframe with the embeddings and parent_asin
     embeddings_df = pd.DataFrame(embeddings)
 
     sentiment = {1: -1, 2: -1, 3: 0, 4: 1, 5: 1}
