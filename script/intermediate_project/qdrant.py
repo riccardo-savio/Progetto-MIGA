@@ -6,7 +6,7 @@ from sklearn.neighbors import KNeighborsRegressor
 
 
 def create_collection(vector_size, collection_name,  dataframe, ids): #TODO: DF WITHOUT PARENT_ASIN
-    client = QdrantClient(host='localhost', port=6333)
+    client = QdrantClient(host='localhost', port=6333)    
     if client.collection_exists(collection_name):
         client.delete_collection(collection_name)
     if not client.collection_exists(collection_name):
@@ -38,9 +38,15 @@ def insert_embeddings(embeddings, collection_name, product_ids):
                 for id, product_id, embedding in zip(chunk_ids, chunk_parent_asin, chunk_embeddings)
             ]
         )
+    client.create_payload_index(
+        collection_name=collection_name,
+        field_name="product_id",
+        field_schema="keyword")
     return operation_status.status == models.UpdateStatus.COMPLETED
 
 def search_similar_products(query_embedding, collection_name, top_k=5, ids=[]):
+
+    
     client = QdrantClient(host='localhost', port=6333)
     if ids != []:
         response = client.search(

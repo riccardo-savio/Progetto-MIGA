@@ -45,7 +45,7 @@ def advanced_pre_process():
     import nltk, contractions, re, os
     from unidecode import unidecode
 
-    reviews_df = get_raw_reviews(columns=['title', 'text', 'rating', 'parent_asin', 'user_id'], toDF=True)
+    reviews_df = pd.read_csv('data/final/reviews_advanced.csv')
 
     reviews_df.drop_duplicates(inplace=True)
     reviews_df.dropna(inplace=True)

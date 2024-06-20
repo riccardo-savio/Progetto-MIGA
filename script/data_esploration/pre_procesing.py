@@ -116,8 +116,7 @@ def filter_by_prod_nreviews(df: pd.DataFrame, n: int) -> pd.DataFrame:
     df_filtered = df[df["parent_asin"].isin(df_grouped[df_grouped["count"] >= n]["parent_asin"])]
     return df_filtered
 
-
-def main():
+def base_intermediate_pre_process():
     from data_gathering import get_processed_reviews, get_processed_metadata
     
     print("Preprocessing reviews dataset...")
@@ -139,6 +138,34 @@ def main():
     os.makedirs("data/final/") if not os.path.exists("data/final/") else None
     df_r.to_csv("data/final/reviews.csv", index=False)
     df_m.to_csv("data/final/metadata.csv", index=False)
+
+def advanced_pre_process():
+    from data_gathering import get_processed_reviews, get_processed_metadata
+    
+    print("Preprocessing reviews dataset...")
+    prep_reviews(["rating", "parent_asin", "user_id", "title", "text", "timestamp"])
+
+    df_r = get_processed_reviews()
+    df_r = filter_by_date(df_r, "2011-01-01", "2024-01-01")
+    df_r = filter_by_user_nreviews(df_r, 18)[["user_id", "parent_asin", "rating", "title", "text"]]
+    df_r = filter_by_prod_nreviews(df_r, 8)
+    print("Preprocessing metadata dataset...")
+    prep_metadata(['parent_asin', 'title', 'description'])
+    df_m = get_processed_metadata()
+    df_m = df_m[df_m["parent_asin"].isin(df_r["parent_asin"])]
+    df_r = df_r[df_r["parent_asin"].isin(df_m["parent_asin"])]
+
+    print(df_r["user_id"].nunique(), df_r["parent_asin"].nunique())
+    print("Dimensione", df_m.shape, df_r.shape)
+
+    os.makedirs("data/final/") if not os.path.exists("data/final/") else None
+    df_r.to_csv("data/final/reviews_advanced.csv", index=False)
+
+def main():
+    base_intermediate_pre_process()
+    advanced_pre_process()
+
+    
 
 if __name__ == "__main__":
     main()
