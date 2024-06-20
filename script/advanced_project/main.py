@@ -1,6 +1,5 @@
 import pandas as pd
 import DTclassifiers as dt
-import os
 
 def bow_embeddings(review_df: pd.DataFrame):
     import os

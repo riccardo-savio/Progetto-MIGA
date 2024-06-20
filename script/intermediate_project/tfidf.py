@@ -183,8 +183,8 @@ def tfidf_prediction_knn(embeddings=None):
 
 def tfidf():
     items_df = pd.read_csv('data/final/metadata.csv')
-    if os.path.exists('data/_lemmataized/lemmataized_items.csv'):
-        processed_items_df = pd.read_csv('data/_lemmataized/lemmataized_items.csv')
+    if os.path.exists('data/_lemmatized/lemmatized_items.csv'):
+        processed_items_df = pd.read_csv('data/_lemmatized/lemmatized_items.csv')
     else:
         from pre_processing import intermediate_pre_process
         processed_items_df = intermediate_pre_process(items_df.copy())

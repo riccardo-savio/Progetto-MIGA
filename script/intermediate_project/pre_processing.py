@@ -54,7 +54,7 @@ def intermediate_pre_process(processed_items_df: DataFrame):
     processed_items_df['title_description'] = processed_items_df['title_description'].apply(lambda x: ' '.join(x))
 
     # save on csv create folder
-    os.makedirs('data/_lemmataized', exist_ok=True)
-    processed_items_df.to_csv('data/_lemmataized/lemmataized_items.csv', index=False)
+    os.makedirs('data/_lemmatized', exist_ok=True)
+    processed_items_df.to_csv('data/_lemmatized/lemmatized_items.csv', index=False)
 
     return processed_items_df
