@@ -39,7 +39,7 @@ def basic_project(rating_matrix,FORCE):
     rec_lists = pd.DataFrame(list(res_df.apply(sort_columns, axis=1)),
                             index=res_df.index)
     
-    print(rec_lists.head()) # TODO: Volendo si può associare ciascun parent_asin al suo titolo
+    print(rec_lists.head())
 
     # -------------------------- 6. Compare KNN and SVD ---------------------------------------------------------------
 

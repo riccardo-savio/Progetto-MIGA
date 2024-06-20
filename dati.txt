@@ -4,3 +4,39 @@ numero prodotti (solo filtro 2012): 131805
 
 numero utenti con minimo 18 rew : 5859 
 numero prodotti con minimo 8 rew e filtro prima : 4080
+
+numero review: 100992
+
+------------------------------ basic project ------------------------------
+Best KNN configuration = {'k': 31, 'sim_options': {'name': 'msd', 'user_based': False}}
+Choose the best number of clusters: 5
+Best SVD configuration = {'n_factors': 20, 'n_epochs': 30, 'biased': True}
+Comparison between KNN and SVD:
+        KNN     |  SVD
+MSE     1.0374  |  0.8900
+RMSE    1.0185  |  0.9434
+
+------------------------------ intermediate project ------------------------------
+numero utenti con minimo 13 rew dopo filtro prodotti: 3656
+
+-------------- TF-IDF --------------
+
+Start testing the qdrant model... DA RIFARE
+MSE: 1.0060830680175152
+RMSE: 1.0030369225594415
+Time elapsed (qdrant): 33495.62333440781 seconds
+
+Start testing the KNN model...
+MSE (KNN): 0.9401470826357956
+RMSE (KNN): 0.9696118205940951
+Time elapsed (KNN): 1095.0891687870026 seconds
+
+-------------- Transformers --------------
+
+Testing the qdrant model with only one user...
+Time elapsed (qdrant): 13.933616638183594 seconds
+
+Start testing the KNN model...
+Mean Squared Error (KNN): 0.9663750852972534
+Root Mean Squared Error (KNN): 0.9830437860529171
+Time elapsed (KNN): 54.48450541496277 seconds

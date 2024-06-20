@@ -1,14 +1,9 @@
 from qdrant_client import QdrantClient, models
-import os, pandas as pd, numpy as np, time
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
-from sklearn.neighbors import KNeighborsRegressor
 
-
-def create_collection(vector_size, collection_name,  dataframe, ids): #TODO: DF WITHOUT PARENT_ASIN
+def create_collection(vector_size, collection_name,  dataframe, ids):
     client = QdrantClient(host='localhost', port=6333)    
-    if client.collection_exists(collection_name):
-        client.delete_collection(collection_name)
+    # if client.collection_exists(collection_name):
+    #     client.delete_collection(collection_name)
     if not client.collection_exists(collection_name):
         print("Creating collection...")
         client.create_collection(
